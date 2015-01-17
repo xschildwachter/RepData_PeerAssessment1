@@ -6,28 +6,34 @@ output:
 ---
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 data.raw <- read.csv("../../data/raw/activity.csv")
 data.raw$interval <- factor(data.raw$interval)
 ```
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 # Total number of steps per day
 steps.sum.by.day <- aggregate(data.raw$steps, by=list(data.raw$date), sum)
 names(steps.sum.by.day) <- c("date", "steps")
 mean.total.steps.by.day <- mean(steps.sum.by.day$steps, na.rm=TRUE)
 median.total.steps.by.day <- median(steps.sum.by.day$steps, na.rm=TRUE)
 ```
-The mean and the median total number of steps taken by day are `r round(mean.total.steps.by.day)` and `r round(median.total.steps.by.day)`.
+The mean and the median total number of steps taken by day are 1.0766 &times; 10<sup>4</sup> and 1.0765 &times; 10<sup>4</sup>.
 
-```{r f1, fig.height=8, fig.width=12}
+
+```r
 # Histogram of total number of steps per day
 hist(steps.sum.by.day$steps, main="Histogram of total number of steps per day", xlab="Total number of steps per day")
 ```
 
+![plot of chunk f1](figure/f1-1.png) 
+
 ## What is the average daily activity pattern?
-```{r f2, fig.height=8, fig.width=12}
+
+```r
 steps.mean.by.interval <- aggregate(data.raw$steps, by=list(data.raw$interval), FUN=function(x) mean(x,na.rm=TRUE))
 colnames(steps.mean.by.interval) <- c("interval", "steps")
 idx.max.steps.mean.by.interval <- which.max(steps.mean.by.interval$steps)
@@ -36,10 +42,13 @@ plot(unique(data.raw$interval), steps.mean.by.interval$steps, type = "l",
      xlab = "Interval",
      ylab = "Average number of steps")
 ```
-The interval that, on average across all the days in the dataset, contains the maximum number of steps is `r steps.mean.by.interval[idx.max.steps.mean.by.interval,]$interval`.
+
+![plot of chunk f2](figure/f2-1.png) 
+The interval that, on average across all the days in the dataset, contains the maximum number of steps is 835.
 
 ## Imputing missing values
-```{r}
+
+```r
 # Compute Imputed values
 idx.imputed <- which(is.na(data.raw$steps))
 imputed.values <- cbind(data.raw[idx.imputed,], steps.mean.by.interval)
@@ -53,15 +62,19 @@ names(steps.imputed.sum.by.day) <- c("date", "steps")
 mean.total.imputed.steps.by.day <- mean(steps.imputed.sum.by.day$steps, na.rm=TRUE)
 median.total.imputed.steps.by.day <- median(steps.imputed.sum.by.day$steps, na.rm=TRUE)
 ```
-The mean and the median total number of steps taken by day are `r mean.total.imputed.steps.by.day` and `r median.total.imputed.steps.by.day`.
-```{r f3, fig.height=8, fig.width=12}
+The mean and the median total number of steps taken by day are 1.0766189 &times; 10<sup>4</sup> and 1.0766189 &times; 10<sup>4</sup>.
+
+```r
 # Histogram of total number of steps per day
 hist(steps.imputed.sum.by.day$steps, main="Histogram of total number of imputed steps per day",
      xlab="Total number of imputed steps per day")
 ```
 
+![plot of chunk f3](figure/f3-1.png) 
+
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r f4, fig.height=8, fig.width=12}
+
+```r
 # 1. Create a new factor variable in the dataset with two levels -- "weekday"
 # and "weekend" indicating whether a given date is a weekday or weekend day.
 library(ggplot2)
@@ -80,3 +93,5 @@ sp <- sp + scale_x_discrete(breaks=c(0,500,1000,1500,2000))
 sp <- sp + labs(title="Difference in activity patterns")
 sp
 ```
+
+![plot of chunk f4](figure/f4-1.png) 
