@@ -8,7 +8,7 @@ output:
 ## Loading and preprocessing the data
 
 ```r
-data.raw <- read.csv("../../data/raw/activity.csv")
+data.raw <- read.csv(unz("./activity.zip", "activity.csv"))
 data.raw$interval <- factor(data.raw$interval)
 ```
 
@@ -21,12 +21,14 @@ names(steps.sum.by.day) <- c("date", "steps")
 mean.total.steps.by.day <- mean(steps.sum.by.day$steps, na.rm=TRUE)
 median.total.steps.by.day <- median(steps.sum.by.day$steps, na.rm=TRUE)
 ```
-The mean and the median total number of steps taken by day are 1.0766 &times; 10<sup>4</sup> and 1.0765 &times; 10<sup>4</sup>.
+The mean and the median total number of steps taken by day are 1.0766 &times; 10<sup>4</sup>
+and 1.0765 &times; 10<sup>4</sup>.
 
 
 ```r
 # Histogram of total number of steps per day
-hist(steps.sum.by.day$steps, main="Histogram of total number of steps per day", xlab="Total number of steps per day")
+hist(steps.sum.by.day$steps, main="Histogram of total number of steps per day",
+     xlab="Total number of steps per day")
 ```
 
 ![plot of chunk f1](figure/f1-1.png) 
@@ -34,9 +36,16 @@ hist(steps.sum.by.day$steps, main="Histogram of total number of steps per day", 
 ## What is the average daily activity pattern?
 
 ```r
-steps.mean.by.interval <- aggregate(data.raw$steps, by=list(data.raw$interval), FUN=function(x) mean(x,na.rm=TRUE))
+steps.mean.by.interval <- aggregate(data.raw$steps, by=list(data.raw$interval),
+                                    FUN=function(x) mean(x,na.rm=TRUE))
 colnames(steps.mean.by.interval) <- c("interval", "steps")
 idx.max.steps.mean.by.interval <- which.max(steps.mean.by.interval$steps)
+int.max.steps.mean.by.interval <- steps.mean.by.interval[idx.max.steps.mean.by.interval,]$interval
+```
+The interval that, on average across all the days in the dataset, contains the
+maximum number of steps is 835.
+
+```r
 plot(unique(data.raw$interval), steps.mean.by.interval$steps, type = "l",
      main = "Average daily activity pattern",
      xlab = "Interval",
@@ -44,7 +53,6 @@ plot(unique(data.raw$interval), steps.mean.by.interval$steps, type = "l",
 ```
 
 ![plot of chunk f2](figure/f2-1.png) 
-The interval that, on average across all the days in the dataset, contains the maximum number of steps is 835.
 
 ## Imputing missing values
 
@@ -62,7 +70,8 @@ names(steps.imputed.sum.by.day) <- c("date", "steps")
 mean.total.imputed.steps.by.day <- mean(steps.imputed.sum.by.day$steps, na.rm=TRUE)
 median.total.imputed.steps.by.day <- median(steps.imputed.sum.by.day$steps, na.rm=TRUE)
 ```
-The mean and the median total number of steps taken by day are 1.0766189 &times; 10<sup>4</sup> and 1.0766189 &times; 10<sup>4</sup>.
+The mean and the median total number of steps taken by day are 1.0766189 &times; 10<sup>4</sup>
+and 1.0766189 &times; 10<sup>4</sup>.
 
 ```r
 # Histogram of total number of steps per day
@@ -80,17 +89,20 @@ hist(steps.imputed.sum.by.day$steps, main="Histogram of total number of imputed 
 library(ggplot2)
 data.weekday <- data.raw
 data.weekday$day.type <- "weekday"
-data.weekday[which(weekdays(as.POSIXct(data.weekday$date)) %in% c("Saturday", "Sunday")),]$day.type <- "weekend"
+data.weekday[which(weekdays(as.POSIXct(data.weekday$date))
+                   %in% c("Saturday", "Sunday")),]$day.type <- "weekend"
 data.weekday$day.type <- factor(data.weekday$day.type)
-mean.steps.by.wd.type.interval <- aggregate(data.weekday$steps, by=list(data.weekday$day.type, data.weekday$interval), FUN=function(x) mean(x,na.rm=TRUE))
+mean.steps.by.wd.type.interval <- aggregate(data.weekday$steps,
+                                            by=list(data.weekday$day.type,
+                                                    data.weekday$interval),
+                                            FUN=function(x) mean(x,na.rm=TRUE))
 colnames(mean.steps.by.wd.type.interval) <- c("day.type", "interval", "mean")
 # 2. Make a panel plot containing a time series plot (i.e. `type = "l"`) of the
 # 5-minute interval (x-axis) and the average number of steps taken, averaged across
 # all weekday days or weekend days (y-axis).
-sp <- ggplot(mean.steps.by.wd.type.interval, aes(x=interval, y=mean, group=day.type)) + geom_line()
-sp <- sp + facet_grid(day.type ~ .)
-sp <- sp + scale_x_discrete(breaks=c(0,500,1000,1500,2000))
-sp <- sp + labs(title="Difference in activity patterns")
+sp <- ggplot(mean.steps.by.wd.type.interval, aes(x=interval, y=mean, group=day.type))
+sp <- sp + geom_line() + facet_grid(day.type ~ .)
+sp <- sp + scale_x_discrete(breaks=c(0,500,1000,1500,2000)) + labs(title="Difference in activity patterns")
 sp
 ```
 
