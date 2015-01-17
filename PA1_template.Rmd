@@ -27,16 +27,19 @@ hist(steps.sum.by.day$steps, main="Histogram of total number of steps per day", 
 ```
 
 ## What is the average daily activity pattern?
-```{r f2, fig.height=8, fig.width=12}
+```{r}
 steps.mean.by.interval <- aggregate(data.raw$steps, by=list(data.raw$interval), FUN=function(x) mean(x,na.rm=TRUE))
 colnames(steps.mean.by.interval) <- c("interval", "steps")
 idx.max.steps.mean.by.interval <- which.max(steps.mean.by.interval$steps)
+int.max.steps.mean.by.interval <- steps.mean.by.interval[idx.max.steps.mean.by.interval,]$interval
+```
+The interval that, on average across all the days in the dataset, contains the maximum number of steps is `r int.max.steps.mean.by.interval`.
+```{r f2, fig.height=8, fig.width=12}
 plot(unique(data.raw$interval), steps.mean.by.interval$steps, type = "l",
      main = "Average daily activity pattern",
      xlab = "Interval",
      ylab = "Average number of steps")
 ```
-The interval that, on average across all the days in the dataset, contains the maximum number of steps is `r steps.mean.by.interval[idx.max.steps.mean.by.interval,]$interval`.
 
 ## Imputing missing values
 ```{r}
