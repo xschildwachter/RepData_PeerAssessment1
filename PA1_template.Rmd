@@ -7,7 +7,7 @@ output:
 
 ## Loading and preprocessing the data
 ```{r}
-data.raw <- read.csv("../../data/raw/activity.csv")
+data.raw <- read.csv(unz("./activity.zip", "activity.csv"))
 data.raw$interval <- factor(data.raw$interval)
 ```
 
