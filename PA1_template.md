@@ -103,14 +103,7 @@ colnames(mean.steps.by.wd.type.interval) <- c("day.type", "interval", "mean")
 sp <- ggplot(mean.steps.by.wd.type.interval, aes(x=interval, y=mean, group=day.type))
 sp <- sp + geom_line() + facet_grid(day.type ~ .)
 sp <- sp + scale_x_discrete(breaks=c(0,600,1200,1800), labels=c("00:00", "06:00", "12:00", "18:00"))
-      + labs(title="Difference in activity patterns")
-```
-
-```
-## Error in +labs(title = "Difference in activity patterns"): invalid argument to unary operator
-```
-
-```r
+sp <- sp + labs(title="Difference in activity patterns")
 sp
 ```
 
